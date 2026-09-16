@@ -1,0 +1,97 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE_CONFIG } from '../../config';
+import type { Lang } from '../../utils/i18n';
+
+export async function getStaticPaths() {
+  return SITE_CONFIG.languages.map((l) => ({
+    params: { lang: l.code },
+  }));
+}
+
+const { lang } = Astro.params as { lang: Lang };
+---
+
+<BaseLayout
+  title={`Acerca de | ${SITE_CONFIG.author}`}
+  description={`Perfil profesional y trayectoria de ${SITE_CONFIG.author}`}
+  lang={lang}
+>
+  <div class="content-container about-container">
+    <div class="about-card glass-card">
+      <div class="about-header">
+        <div class="about-avatar-lg">YS</div>
+        <div>
+          <h1 class="about-name">{SITE_CONFIG.author}</h1>
+          <p class="about-title">Ingeniero de Software & Creador</p>
+        </div>
+      </div>
+
+      <div class="prose about-body">
+        <p>
+          ¡Hola! Soy <strong>{SITE_CONFIG.author}</strong>. Este blog es mi rincón digital para documentar ideas, experimentos de desarrollo, patrones arquitectónicos y lecciones aprendidas en el mundo de la tecnología.
+        </p>
+
+        <h2>Sobre este sitio</h2>
+        <ul>
+          <li><strong>Tecnología:</strong> Construido con <a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a> para obtener máxima velocidad y cero JS innecesario.</li>
+          <li><strong>Alojamiento:</strong> GitHub Pages con compilación continua mediante GitHub Actions.</li>
+          <li><strong>Comentarios:</strong> Disqus integrado en cada publicación.</li>
+          <li><strong>i18n:</strong> Soporte multi-idioma nativo.</li>
+        </ul>
+
+        <h2>Contacto & Enlaces</h2>
+        <p>
+          Puedes seguir mis proyectos y código en <a href="https://github.com/yinosanchez" target="_blank" rel="noopener noreferrer">GitHub (@yinosanchez)</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .about-container {
+    padding: 1rem 0 3rem 0;
+  }
+
+  .about-card {
+    padding: 2.5rem;
+  }
+
+  .about-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--bg-card-border);
+  }
+
+  .about-avatar-lg {
+    width: 72px;
+    height: 72px;
+    border-radius: var(--radius-md);
+    background: var(--accent-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: white;
+    box-shadow: var(--shadow-glow);
+  }
+
+  .about-name {
+    font-size: 1.85rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .about-title {
+    color: var(--accent-primary);
+    font-weight: 600;
+  }
+
+  .about-body {
+    margin-top: 1rem;
+  }
+</style>

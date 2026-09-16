@@ -1,0 +1,80 @@
+---
+import type { Lang } from '../utils/i18n';
+import { useTranslations } from '../utils/i18n';
+
+interface CategoryInfo {
+  name: string;
+  count: number;
+}
+
+interface Props {
+  categories: CategoryInfo[];
+  activeCategory?: string;
+  lang: Lang;
+}
+
+const { categories, activeCategory, lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<div class="category-filter-container">
+  <div class="category-header">
+    <span class="category-label">{t('site.categories')}</span>
+  </div>
+  <div class="category-pills">
+    <a
+      href={`/${lang}/`}
+      class={`category-badge ${!activeCategory ? 'active' : ''}`}
+    >
+      {t('site.allPosts')}
+    </a>
+
+    {
+      categories.map((cat) => {
+        const isActive = activeCategory?.toLowerCase() === cat.name.toLowerCase();
+        return (
+          <a
+            href={`/${lang}/category/${encodeURIComponent(cat.name)}/`}
+            class={`category-badge ${isActive ? 'active' : ''}`}
+          >
+            <span>{cat.name}</span>
+            <span class="cat-count">({cat.count})</span>
+          </a>
+        );
+      })
+    }
+  </div>
+</div>
+
+<style>
+  .category-filter-container {
+    margin-bottom: 2.5rem;
+    padding: 1.25rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--bg-card-border);
+    border-radius: var(--radius-md);
+  }
+
+  .category-header {
+    margin-bottom: 0.75rem;
+  }
+
+  .category-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+
+  .category-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .cat-count {
+    opacity: 0.7;
+    font-size: 0.85em;
+  }
+</style>

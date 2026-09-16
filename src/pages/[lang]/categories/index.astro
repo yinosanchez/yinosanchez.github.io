@@ -1,0 +1,123 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { SITE_CONFIG } from '../../../config';
+import { useTranslations, type Lang } from '../../../utils/i18n';
+
+export async function getStaticPaths() {
+  return SITE_CONFIG.languages.map((l) => ({
+    params: { lang: l.code },
+  }));
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const t = useTranslations(lang);
+
+const posts = await getCollection('blog', ({ data }) => data.lang === lang && !data.draft);
+
+// Agrupar posts por categoría
+const categoryMap = new Map<string, typeof posts>();
+posts.forEach((post) => {
+  const cat = post.data.category;
+  if (!categoryMap.has(cat)) {
+    categoryMap.set(cat, []);
+  }
+  categoryMap.get(cat)!.push(post);
+});
+
+const categoryList = Array.from(categoryMap.entries()).map(([name, catPosts]) => ({
+  name,
+  posts: catPosts,
+  count: catPosts.length,
+}));
+---
+
+<BaseLayout
+  title={`${t('site.categories')} | ${SITE_CONFIG.author}`}
+  description={`Explora todos los temas y categorías del blog de ${SITE_CONFIG.author}`}
+  lang={lang}
+>
+  <div class="container">
+    <div class="categories-header">
+      <h1 class="categories-title">{t('site.categories')}</h1>
+      <p class="categories-subtitle">Explora las publicaciones por área de interés.</p>
+    </div>
+
+    <div class="categories-grid">
+      {
+        categoryList.map((cat) => (
+          <a href={`/${lang}/category/${encodeURIComponent(cat.name)}/`} class="category-card glass-card">
+            <div class="category-card-header">
+              <span class="category-card-title">{cat.name}</span>
+              <span class="category-count-pill">{cat.count} {cat.count === 1 ? 'post' : 'posts'}</span>
+            </div>
+            <p class="category-card-desc">
+              Ver todas las publicaciones sobre {cat.name}
+            </p>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .categories-header {
+    text-align: center;
+    padding: 1.5rem 0 3rem 0;
+  }
+
+  .categories-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: 0.5rem;
+  }
+
+  .categories-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+  }
+
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .category-card {
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 140px;
+  }
+
+  .category-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+  }
+
+  .category-card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    color: var(--text-primary);
+  }
+
+  .category-count-pill {
+    font-size: 0.8rem;
+    color: var(--accent-primary);
+    background: rgba(99, 102, 241, 0.1);
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+  }
+
+  .category-card-desc {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+</style>

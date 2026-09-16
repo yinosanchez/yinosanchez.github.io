@@ -1,0 +1,103 @@
+---
+import { SITE_CONFIG, type Language } from '../config';
+import type { Lang } from '../utils/i18n';
+
+interface Props {
+  currentLang: Lang;
+  translations?: Partial<Record<Lang, string>>;
+}
+
+const { currentLang, translations = {} } = Astro.props;
+const pathname = Astro.url.pathname;
+
+// Generar URL destino para cada idioma
+function getTargetUrl(langCode: Lang): string {
+  if (translations[langCode]) {
+    return translations[langCode]!;
+  }
+  
+  // Si estamos en una ruta común como /[currentLang]/... reemplazar el prefijo
+  const currentPrefix = `/${currentLang}/`;
+  if (pathname.startsWith(currentPrefix)) {
+    return pathname.replace(currentPrefix, `/${langCode}/`);
+  } else if (pathname === `/${currentLang}`) {
+    return `/${langCode}/`;
+  }
+  
+  return `/${langCode}/`;
+}
+---
+
+<div class="lang-switcher" aria-label="Language selector">
+  <div class="lang-switcher-pills">
+    {
+      SITE_CONFIG.languages.map((lang: Language) => {
+        const isActive = lang.code === currentLang;
+        const targetUrl = getTargetUrl(lang.code);
+        return (
+          <a
+            href={isActive ? '#' : targetUrl}
+            class={`lang-pill ${isActive ? 'active' : ''}`}
+            aria-current={isActive ? 'page' : undefined}
+            title={`Cambiar a ${lang.label}`}
+          >
+            <span class="flag">{lang.flag}</span>
+            <span class="code">{lang.code.toUpperCase()}</span>
+          </a>
+        );
+      })
+    }
+  </div>
+</div>
+
+<style>
+  .lang-switcher {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .lang-switcher-pills {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--bg-card-border);
+    border-radius: var(--radius-full);
+    padding: 3px;
+    gap: 2px;
+  }
+
+  .lang-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.65rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    font-family: var(--font-heading);
+    color: var(--text-secondary);
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    transition: var(--transition);
+  }
+
+  .lang-pill:hover:not(.active) {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .lang-pill.active {
+    background: var(--accent-primary);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+    cursor: default;
+  }
+
+  .flag {
+    font-size: 0.85rem;
+    line-height: 1;
+  }
+
+  .code {
+    letter-spacing: 0.05em;
+  }
+</style>

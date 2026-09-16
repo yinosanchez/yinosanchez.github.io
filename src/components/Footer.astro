@@ -1,0 +1,125 @@
+---
+import { SITE_CONFIG } from '../config';
+import type { Lang } from '../utils/i18n';
+
+interface Props {
+  currentLang: Lang;
+}
+
+const { currentLang } = Astro.props;
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container footer-container">
+    <div class="footer-info">
+      <p class="footer-title">{SITE_CONFIG.title}</p>
+      <p class="footer-description">
+        {SITE_CONFIG.description}
+      </p>
+    </div>
+
+    <div class="footer-links">
+      <div class="footer-column">
+        <span class="column-title">Blog</span>
+        <ul>
+          <li><a href={`/${currentLang}/`}>Inicio</a></li>
+          <li><a href={`/${currentLang}/categories/`}>Categorías</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <span class="column-title">Links</span>
+        <ul>
+          <li><a href="https://github.com/yinosanchez" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="container footer-bottom">
+    <p>© {currentYear} {SITE_CONFIG.author}. Todos los derechos reservados.</p>
+    <p class="built-with">Construido con <a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a> en GitHub Pages</p>
+  </div>
+</footer>
+
+<style>
+  .footer-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 3rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .footer-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.15rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+  }
+
+  .footer-description {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    max-width: 420px;
+    line-height: 1.5;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 3rem;
+  }
+
+  .column-title {
+    display: block;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+  }
+
+  .footer-column ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .footer-column a {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  .footer-column a:hover {
+    color: var(--text-primary);
+  }
+
+  .footer-bottom {
+    border-top: 1px solid var(--bg-card-border);
+    padding-top: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+  }
+
+  .built-with a {
+    color: var(--accent-primary);
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .footer-container {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .footer-bottom {
+      flex-direction: column;
+      gap: 0.75rem;
+      text-align: center;
+    }
+  }
+</style>

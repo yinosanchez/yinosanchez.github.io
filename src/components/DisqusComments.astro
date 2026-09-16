@@ -1,0 +1,130 @@
+---
+import { SITE_CONFIG } from '../config';
+import { useTranslations, type Lang } from '../utils/i18n';
+
+interface Props {
+  postIdentifier: string;
+  postTitle: string;
+  postUrl: string;
+  lang: Lang;
+}
+
+const { postIdentifier, postTitle, postUrl, lang } = Astro.props;
+const t = useTranslations(lang);
+const shortname = SITE_CONFIG.disqusShortname?.trim();
+const isConfigured = Boolean(shortname && shortname !== '');
+---
+
+<section class="disqus-section" id="comments-section">
+  <div class="disqus-header">
+    <div class="disqus-title-wrap">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+      </svg>
+      <h3>{t('site.comments')}</h3>
+    </div>
+  </div>
+
+  {
+    isConfigured ? (
+      <div id="disqus_thread" class="disqus-container"></div>
+      <script is:inline define:vars={{ shortname, postIdentifier, postTitle, postUrl }}>
+        var disqus_config = function () {
+          this.page.url = postUrl;
+          this.page.identifier = postIdentifier;
+          this.page.title = postTitle;
+        };
+
+        (function () {
+          var d = document,
+            s = d.createElement('script');
+          s.src = 'https://' + shortname + '.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    ) : (
+      <div class="disqus-placeholder glass-card">
+        <div class="placeholder-icon">💬</div>
+        <div class="placeholder-text">
+          <p class="placeholder-title">{t('site.comments')}</p>
+          <p class="placeholder-desc">{t('site.disqusNotConfigured')}</p>
+          <p class="placeholder-tip">
+            Variable: <code>SITE_CONFIG.disqusShortname</code> en <code>src/config.ts</code>
+          </p>
+        </div>
+      </div>
+    )
+  }
+</section>
+
+<style>
+  .disqus-section {
+    margin-top: 4rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--bg-card-border);
+  }
+
+  .disqus-header {
+    margin-bottom: 2rem;
+  }
+
+  .disqus-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-primary);
+  }
+
+  .disqus-title-wrap h3 {
+    font-size: 1.4rem;
+    margin: 0;
+  }
+
+  .disqus-container {
+    min-height: 200px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    border: 1px solid var(--bg-card-border);
+  }
+
+  .disqus-placeholder {
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    background: rgba(99, 102, 241, 0.05);
+    border-color: rgba(99, 102, 241, 0.2);
+  }
+
+  .placeholder-icon {
+    font-size: 2.5rem;
+  }
+
+  .placeholder-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+    color: var(--text-primary);
+  }
+
+  .placeholder-desc {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .placeholder-tip {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .placeholder-tip code {
+    color: #38bdf8;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+  }
+</style>

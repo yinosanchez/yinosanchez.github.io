@@ -1,0 +1,200 @@
+---
+import { useTranslations, type Lang } from '../utils/i18n';
+import { SITE_CONFIG } from '../config';
+
+interface Props {
+  comment?: string;
+  lang: Lang;
+}
+
+const { comment, lang } = Astro.props;
+const t = useTranslations(lang);
+
+// Si no hay comentario, no renderizamos nada
+if (!comment) return null;
+
+// ID único para no colisionar
+const modalId = `author-comment-modal-${Math.random().toString(36).substring(2, 9)}`;
+---
+
+<div class="author-comment-wrapper">
+  <!-- Trigger Button -->
+  <button
+    type="button"
+    class="btn btn-author-note"
+    data-modal-target={modalId}
+    aria-haspopup="dialog"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      <circle cx="12" cy="11" r="1"></circle>
+      <circle cx="8" cy="11" r="1"></circle>
+      <circle cx="16" cy="11" r="1"></circle>
+    </svg>
+    <span>{t('site.authorComment')}</span>
+  </button>
+
+  <!-- Native Accessible Modal Dialog -->
+  <dialog id={modalId} class="author-modal" aria-labelledby={`${modalId}-title`}>
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-author-badge">
+          <div class="author-avatar-mini">YS</div>
+          <div>
+            <h3 id={`${modalId}-title`} class="modal-title">{t('site.authorCommentTitle')}</h3>
+            <span class="modal-subtitle">Por {SITE_CONFIG.author}</span>
+          </div>
+        </div>
+        <button type="button" class="close-btn" data-modal-close={modalId} aria-label={t('site.authorCommentClose')}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="quote-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+          </svg>
+        </div>
+        <p class="author-comment-text">{comment}</p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-modal-close={modalId}>
+          {t('site.authorCommentClose')}
+        </button>
+      </div>
+    </div>
+  </dialog>
+</div>
+
+<script>
+  // Script para manejar apertura y cierre del modal
+  function setupAuthorModals() {
+    const triggerButtons = document.querySelectorAll<HTMLButtonElement>('[data-modal-target]');
+    
+    triggerButtons.forEach((btn) => {
+      const targetId = btn.getAttribute('data-modal-target');
+      if (!targetId) return;
+      const dialog = document.getElementById(targetId) as HTMLDialogElement | null;
+      if (!dialog) return;
+
+      btn.addEventListener('click', () => {
+        dialog.showModal();
+      });
+
+      // Cerrar con botones de cerrar
+      const closeButtons = dialog.querySelectorAll<HTMLButtonElement>('[data-modal-close]');
+      closeButtons.forEach((closeBtn) => {
+        closeBtn.addEventListener('click', () => dialog.close());
+      });
+
+      // Cerrar al clickear en el backdrop
+      dialog.addEventListener('click', (e) => {
+        const dialogDimensions = dialog.getBoundingClientRect();
+        if (
+          e.clientX < dialogDimensions.left ||
+          e.clientX > dialogDimensions.right ||
+          e.clientY < dialogDimensions.top ||
+          e.clientY > dialogDimensions.bottom
+        ) {
+          dialog.close();
+        }
+      });
+    });
+  }
+
+  // Inicializar al cargar y tras transiciones
+  setupAuthorModals();
+  document.addEventListener('astro:page-load', setupAuthorModals);
+</script>
+
+<style>
+  .author-comment-wrapper {
+    display: inline-block;
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .modal-author-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .author-avatar-mini {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    background: linear-gradient(135deg, #f59e0b 0%, #ec4899 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: white;
+  }
+
+  .modal-title {
+    font-size: 1.1rem;
+    margin: 0;
+    color: #fbbf24;
+  }
+
+  .modal-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+  }
+
+  .close-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .modal-body {
+    position: relative;
+    padding: 0.5rem 0 1.5rem 0;
+  }
+
+  .quote-icon {
+    color: rgba(245, 158, 11, 0.2);
+    margin-bottom: 0.5rem;
+  }
+
+  .author-comment-text {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: #f1f5f9;
+    font-style: italic;
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+</style>

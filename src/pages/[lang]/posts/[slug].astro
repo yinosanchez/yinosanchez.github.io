@@ -1,0 +1,232 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BlogPostLayout from '../../../layouts/BlogPostLayout.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { SITE_CONFIG } from '../../../config';
+import { getPostSlug, useTranslations, type Lang } from '../../../utils/i18n';
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+  const supportedLanguages = SITE_CONFIG.languages.map((l) => l.code);
+
+  // Agrupar posts por translation_id
+  const translationGroups = new Map<string, CollectionEntry<'blog'>[]>();
+  for (const post of allPosts) {
+    const tid = post.data.translation_id;
+    if (!translationGroups.has(tid)) {
+      translationGroups.set(tid, []);
+    }
+    translationGroups.get(tid)!.push(post);
+  }
+
+  const paths = [];
+
+  // Para cada grupo de traducción y cada idioma soportado:
+  for (const [translationId, group] of translationGroups.entries()) {
+    // Mapa de rutas por idioma disponible
+    const translationMap: Partial<Record<Lang, string>> = {};
+    for (const post of group) {
+      const pLang = post.data.lang as Lang;
+      const pSlug = getPostSlug(post);
+      translationMap[pLang] = `/${pLang}/posts/${pSlug}/`;
+    }
+
+    for (const targetLang of supportedLanguages) {
+      const currentPost = group.find((p) => p.data.lang === targetLang);
+
+      if (currentPost) {
+        // Caso 1: El post existe en este idioma
+        const slug = getPostSlug(currentPost);
+        paths.push({
+          params: {
+            lang: targetLang,
+            slug,
+          },
+          props: {
+            isAvailable: true,
+            post: currentPost,
+            translations: translationMap,
+            availableInOtherLangs: group,
+          },
+        });
+      } else {
+        // Caso 2: El post NO existe en este idioma -> Generar página de fallback
+        // Usamos el slug del post por defecto (español o el primer disponible)
+        const defaultPost = group.find((p) => p.data.lang === SITE_CONFIG.defaultLang) || group[0];
+        const slug = getPostSlug(defaultPost);
+
+        paths.push({
+          params: {
+            lang: targetLang,
+            slug,
+          },
+          props: {
+            isAvailable: false,
+            post: defaultPost,
+            translations: translationMap,
+            availableInOtherLangs: group,
+          },
+        });
+      }
+    }
+  }
+
+  return paths;
+}
+
+interface Props {
+  isAvailable: boolean;
+  post: CollectionEntry<'blog'>;
+  translations: Partial<Record<Lang, string>>;
+  availableInOtherLangs: CollectionEntry<'blog'>[];
+}
+
+const { lang, slug } = Astro.params as { lang: Lang; slug: string };
+const { isAvailable, post, translations, availableInOtherLangs } = Astro.props;
+const t = useTranslations(lang);
+
+// Si está disponible, preparamos el contenido Markdown
+let Content: any = null;
+if (isAvailable && post) {
+  const rendered = await post.render();
+  Content = rendered.Content;
+}
+---
+
+{
+  isAvailable && post ? (
+    <BlogPostLayout
+      title={post.data.title}
+      description={post.data.description}
+      date={post.data.date}
+      category={post.data.category}
+      lang={lang}
+      translationId={post.data.translation_id}
+      authorComment={post.data.author_comment}
+      translations={translations}
+      content={post.body}
+      slug={slug}
+    >
+      <Content />
+    </BlogPostLayout>
+  ) : (
+    /* Vista de Fallback cuando la traducción no está disponible */
+    <BaseLayout
+      title={`No disponible en tu idioma | ${SITE_CONFIG.author}`}
+      description={t('site.notAvailableInLang')}
+      lang={lang}
+      translations={translations}
+    >
+      <div class="content-container fallback-container">
+        <div class="fallback-card glass-card">
+          <div class="fallback-icon-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+          </div>
+
+          <h1 class="fallback-title">{t('site.notAvailableInLang')}</h1>
+
+          <p class="fallback-message">
+            El artículo que buscas aún no ha sido traducido al idioma seleccionado.
+          </p>
+
+          <div class="fallback-available-box">
+            <p class="available-label">{t('site.availableIn')}</p>
+            <div class="available-links">
+              {availableInOtherLangs.map((altPost) => {
+                const altLang = altPost.data.lang as Lang;
+                const altSlug = getPostSlug(altPost);
+                const altLangObj = SITE_CONFIG.languages.find((l) => l.code === altLang);
+                return (
+                  <a href={`/${altLang}/posts/${altSlug}/`} class="btn btn-primary fallback-btn">
+                    <span>{altLangObj?.flag}</span>
+                    <span>{t('site.readInOriginal')} ({altLangObj?.label})</span>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+
+          <div class="fallback-actions">
+            <a href={`/${lang}/`} class="btn btn-secondary">
+              {t('site.clearFilter')}
+            </a>
+          </div>
+        </div>
+      </div>
+    </BaseLayout>
+  )
+}
+
+<style>
+  .fallback-container {
+    padding: 3rem 0;
+  }
+
+  .fallback-card {
+    text-align: center;
+    padding: 3.5rem 2rem;
+    border-color: rgba(99, 102, 241, 0.3);
+    background: radial-gradient(circle at 50% 30%, rgba(99, 102, 241, 0.08) 0%, rgba(17, 24, 39, 0.9) 70%);
+  }
+
+  .fallback-icon-wrap {
+    color: var(--accent-primary);
+    margin-bottom: 1.5rem;
+    display: inline-flex;
+    padding: 1rem;
+    border-radius: var(--radius-full);
+    background: rgba(99, 102, 241, 0.1);
+  }
+
+  .fallback-title {
+    font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+  }
+
+  .fallback-message {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    max-width: 500px;
+    margin: 0 auto 2.5rem auto;
+    line-height: 1.6;
+  }
+
+  .fallback-available-box {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--bg-card-border);
+    border-radius: var(--radius-md);
+    padding: 1.75rem;
+    max-width: 480px;
+    margin: 0 auto 2.5rem auto;
+  }
+
+  .available-label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+
+  .available-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .fallback-btn {
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  .fallback-actions {
+    display: flex;
+    justify-content: center;
+  }
+</style>

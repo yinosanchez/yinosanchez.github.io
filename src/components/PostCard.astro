@@ -1,0 +1,131 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { formatDate, getPostSlug, calculateReadTime, useTranslations, type Lang } from '../utils/i18n';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+  lang: Lang;
+}
+
+const { post, lang } = Astro.props;
+const t = useTranslations(lang);
+const cleanSlug = getPostSlug(post);
+const postUrl = `/${lang}/posts/${cleanSlug}/`;
+const readTime = post.data.readTimeMinutes || calculateReadTime(post.body);
+const formattedDate = formatDate(post.data.date, lang);
+---
+
+<article class="post-card glass-card">
+  <div class="card-meta">
+    <a href={`/${lang}/category/${encodeURIComponent(post.data.category)}/`} class="category-badge">
+      {post.data.category}
+    </a>
+    <span class="meta-separator">•</span>
+    <time datetime={post.data.date.toISOString()} class="post-date">
+      {formattedDate}
+    </time>
+    <span class="meta-separator">•</span>
+    <span class="read-time">{readTime} {t('site.readingTime')}</span>
+  </div>
+
+  <h2 class="post-title">
+    <a href={postUrl}>{post.data.title}</a>
+  </h2>
+
+  <p class="post-description">
+    {post.data.description}
+  </p>
+
+  <div class="card-footer">
+    <a href={postUrl} class="read-more-link">
+      <span>{t('site.readMore')}</span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+        <polyline points="12 5 19 12 12 19"></polyline>
+      </svg>
+    </a>
+
+    {post.data.author_comment && (
+      <span class="author-note-badge" title="Incluye nota especial del autor">
+        💭 Nota del autor
+      </span>
+    )}
+  </div>
+</article>
+
+<style>
+  .post-card {
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 0.9rem;
+  }
+
+  .meta-separator {
+    color: var(--text-muted);
+    opacity: 0.5;
+  }
+
+  .post-title {
+    font-size: 1.35rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.35;
+  }
+
+  .post-title a {
+    color: var(--text-primary);
+  }
+
+  .post-title a:hover {
+    color: #818cf8;
+  }
+
+  .post-description {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid var(--bg-card-border);
+  }
+
+  .read-more-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--accent-primary);
+  }
+
+  .read-more-link:hover {
+    color: #a5b4fc;
+    gap: 0.6rem;
+  }
+
+  .author-note-badge {
+    font-size: 0.75rem;
+    color: #fbbf24;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius-full);
+  }
+</style>

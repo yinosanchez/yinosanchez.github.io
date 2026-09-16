@@ -1,0 +1,137 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PostCard from '../../../components/PostCard.astro';
+import CategoryFilter from '../../../components/CategoryFilter.astro';
+import { SITE_CONFIG } from '../../../config';
+import { useTranslations, type Lang } from '../../../utils/i18n';
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+
+  // Generar rutas únicas combinando cada idioma con cada categoría existente
+  const paths = [];
+
+  for (const langObj of SITE_CONFIG.languages) {
+    const lang = langObj.code;
+    const postsForLang = allPosts.filter((p) => p.data.lang === lang);
+    const uniqueCategories = [...new Set(postsForLang.map((p) => p.data.category))];
+
+    for (const category of uniqueCategories) {
+      paths.push({
+        params: {
+          lang,
+          category,
+        },
+      });
+    }
+  }
+
+  return paths;
+}
+
+const { lang, category } = Astro.params as { lang: Lang; category: string };
+const t = useTranslations(lang);
+
+// Posts de este idioma y categoría
+const posts = await getCollection('blog', ({ data }) => {
+  return data.lang === lang && data.category.toLowerCase() === category.toLowerCase() && !data.draft;
+});
+
+posts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+
+// Todas las categorías para el CategoryFilter
+const allLangPosts = await getCollection('blog', ({ data }) => data.lang === lang && !data.draft);
+const categoryMap = new Map<string, number>();
+allLangPosts.forEach((post) => {
+  const cat = post.data.category;
+  categoryMap.set(cat, (categoryMap.get(cat) || 0) + 1);
+});
+
+const categories = Array.from(categoryMap.entries()).map(([name, count]) => ({
+  name,
+  count,
+}));
+---
+
+<BaseLayout
+  title={`${category.toUpperCase()} | ${SITE_CONFIG.author}`}
+  description={`${t('site.filterByCategory')} ${category}`}
+  lang={lang}
+>
+  <div class="container">
+    <!-- Encabezado de la Categoría -->
+    <section class="category-hero">
+      <div class="category-meta-header">
+        <span class="category-hero-badge">Categoría</span>
+        <h1 class="category-hero-title">{category}</h1>
+        <p class="category-hero-desc">
+          {posts.length} {posts.length === 1 ? 'publicación encontrada' : 'publicaciones encontradas'} en esta sección.
+        </p>
+      </div>
+    </section>
+
+    <!-- Barra de Filtros -->
+    <CategoryFilter categories={categories} activeCategory={category} lang={lang} />
+
+    <!-- Grid de Posts -->
+    <section class="posts-section">
+      {
+        posts.length > 0 ? (
+          <div class="posts-grid">
+            {posts.map((post) => (
+              <PostCard post={post} lang={lang} />
+            ))}
+          </div>
+        ) : (
+          <div class="empty-posts glass-card">
+            <p>{t('site.noPostsFound')}</p>
+            <a href={`/${lang}/`} class="btn btn-primary" style="margin-top: 1rem;">
+              {t('site.clearFilter')}
+            </a>
+          </div>
+        )
+      }
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .category-hero {
+    padding: 1.5rem 0 2.5rem 0;
+    text-align: center;
+  }
+
+  .category-hero-badge {
+    display: inline-block;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent-primary);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .category-hero-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    text-transform: capitalize;
+    margin-bottom: 0.75rem;
+  }
+
+  .category-hero-desc {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+  }
+
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.75rem;
+  }
+
+  .empty-posts {
+    padding: 3rem;
+    text-align: center;
+    color: var(--text-muted);
+  }
+</style>
