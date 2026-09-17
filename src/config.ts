@@ -6,18 +6,19 @@ export interface Language {
 }
 
 export const SITE_CONFIG = {
-  title: 'Yino Sánchez | Blog',
-  author: 'Yino Sánchez',
-  description: 'Artículos sobre desarrollo de software, arquitectura web, inteligencia artificial y tecnología.',
+  title: 'Marcelo Sánchez | Blog',
+  author: 'Marcelo Sánchez González',
+  description: 'Historias, opiniones y experimentos',
+  slogan: 'Ingeniero de Sofware, a veces escritor',
   defaultLang: 'es' as const,
   languages: [
     { code: 'es', label: 'Español', flag: '🇪🇸' },
     { code: 'en', label: 'English', flag: '🇺🇸' },
   ] as const,
-  
+
   // Configuración de Disqus: Coloca aquí tu Disqus Shortname cuando lo tengas
   // Por ejemplo: 'yinosanchez-blog'
-  disqusShortname: '', 
+  disqusShortname: '',
 
   // Navegación principal por idioma
   nav: {
@@ -38,7 +39,9 @@ export const SITE_CONFIG = {
   // Traducciones de la interfaz
   ui: {
     es: {
-      'site.tagline': 'Pensamientos, código y reflexiones tecnológicas',
+      'site.title': 'Marcelo Sánchez',
+      'site.subtitle': 'Ingeniero de Software, a veces escritor',
+      'site.tagline': 'Historias, opiniones y experimentos',
       'site.allPosts': 'Todas las publicaciones',
       'site.readMore': 'Leer artículo',
       'site.readingTime': 'min de lectura',
@@ -60,7 +63,9 @@ export const SITE_CONFIG = {
       'site.share': 'Compartir',
     },
     en: {
-      'site.tagline': 'Thoughts, code, and reflections on tech',
+      'site.title': 'Marcelo Sánchez',
+      'site.subtitle': 'Software Engineer, sometimes writer',
+      'site.tagline': 'Stories, opinions and experiments with code',
       'site.allPosts': 'All Articles',
       'site.readMore': 'Read article',
       'site.readingTime': 'min read',

@@ -43,15 +43,14 @@ const categories = Array.from(categoryMap.entries()).map(([name, count]) => ({
   <div class="container">
     <!-- Hero Section -->
     <section class="hero-section">
-      <div class="hero-badge">
-        <span class="pulse-dot"></span>
-        <span>Tech Blog & Development</span>
-      </div>
       <h1 class="hero-title">
-        Explorando el <span class="gradient-text">Código</span>, la Arquitectura y la Innovación.
+        {t('site.title')}
       </h1>
+      <p class="hero-subtitle">
+        {t('site.subtitle')}
+      </p>
       <p class="hero-description">
-        {t('site.tagline')}. Artículos sobre Astro, TypeScript, Inteligencia Artificial y mejores prácticas de ingeniería.
+        {t('site.tagline')}
       </p>
     </section>
 
