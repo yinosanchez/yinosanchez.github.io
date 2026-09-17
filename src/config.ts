@@ -22,12 +22,14 @@ export const SITE_CONFIG = {
   // Navegación principal por idioma
   nav: {
     es: [
-      { text: 'Inicio', href: '/es/' },
+      { text: 'Inicio', href: '/' },
+      { text: 'Blog', href: '/es/' },
       { text: 'Categorías', href: '/es/categories/' },
       { text: 'Acerca de', href: '/es/about/' },
     ],
     en: [
-      { text: 'Home', href: '/en/' },
+      { text: 'Home', href: '/' },
+      { text: 'Blog', href: '/en/' },
       { text: 'Categories', href: '/en/categories/' },
       { text: 'About', href: '/en/about/' },
     ]

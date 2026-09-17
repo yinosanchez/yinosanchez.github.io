@@ -1,3 +1,341 @@
 ---
-return Astro.redirect('/es/');
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import { SITE_CONFIG } from '../config';
+
+// Obtener los artículos más recientes en español (idioma por defecto)
+const recentPosts = await getCollection('blog', ({ data }) => {
+  return data.lang === 'es' && !data.draft;
+});
+
+recentPosts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+const featuredPosts = recentPosts.slice(0, 3);
+
+// Categorías disponibles
+const categoryMap = new Map<string, number>();
+recentPosts.forEach((post) => {
+  const cat = post.data.category;
+  categoryMap.set(cat, (categoryMap.get(cat) || 0) + 1);
+});
+
+const categories = Array.from(categoryMap.entries()).map(([name, count]) => ({
+  name,
+  count,
+}));
 ---
+
+<BaseLayout
+  title={`${SITE_CONFIG.author} | Software Engineer & Tech Blog`}
+  description={SITE_CONFIG.description}
+  lang="es"
+>
+  <div class="landing-wrapper">
+    <!-- Hero Section -->
+    <section class="container hero-section">
+      <div class="hero-badge">
+        <span class="status-indicator"></span>
+        <span>Software Engineering & Innovation</span>
+      </div>
+
+      <h1 class="hero-main-title">
+        Construyendo el futuro con <br />
+        <span class="gradient-text">Código, Arquitectura e IA</span>
+      </h1>
+
+      <p class="hero-lead-text">
+        Bienvenido a mi espacio personal. Aquí comparto reflexiones profundas, tutoriales técnicos y aprendizajes sobre desarrollo web moderno, arquitectura de sistemas e inteligencia artificial.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="/es/" class="btn btn-primary btn-lg">
+          <span>Explorar Artículos</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+        <a href="/en/" class="btn btn-secondary btn-lg">
+          <span>Read in English (EN)</span>
+        </a>
+      </div>
+
+      <!-- Tech Stack Highlights -->
+      <div class="tech-pills">
+        <span class="tech-pill">⚡ Astro & TypeScript</span>
+        <span class="tech-pill">🏛️ Clean Architecture</span>
+        <span class="tech-pill">🤖 AI & Autonomous Agents</span>
+        <span class="tech-pill">🚀 GitHub Pages</span>
+      </div>
+    </section>
+
+    <!-- Featured Categories Grid -->
+    <section class="container categories-overview-section">
+      <div class="section-title-wrap text-center">
+        <span class="section-badge">Especialidades</span>
+        <h2 class="section-heading">Áreas de Conocimiento</h2>
+        <p class="section-subheading">Temas centrales sobre los que escribo y diseño soluciones.</p>
+      </div>
+
+      <div class="topic-cards-grid">
+        <a href="/es/category/desarrollo/" class="topic-card glass-card">
+          <div class="topic-icon-wrap" style="--accent: #6366f1;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+          </div>
+          <h3 class="topic-title">Desarrollo Web</h3>
+          <p class="topic-desc">Frameworks modernos, TypeScript, optimización de Core Web Vitals y rendimiento extremo.</p>
+          <span class="topic-link">Ver artículos →</span>
+        </a>
+
+        <a href="/es/category/arquitectura/" class="topic-card glass-card">
+          <div class="topic-icon-wrap" style="--accent: #a855f7;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+              <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+              <line x1="6" y1="6" x2="6.01" y2="6"></line>
+              <line x1="6" y1="18" x2="6.01" y2="18"></line>
+            </svg>
+          </div>
+          <h3 class="topic-title">Arquitectura</h3>
+          <p class="topic-desc">Patrones de diseño escalables, microfrontends, desacoplamiento y sistemas mantenibles.</p>
+          <span class="topic-link">Ver artículos →</span>
+        </a>
+
+        <a href="/es/category/tutoriales/" class="topic-card glass-card">
+          <div class="topic-icon-wrap" style="--accent: #06b6d4;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+          </div>
+          <h3 class="topic-title">Guías y Tutoriales</h3>
+          <p class="topic-desc">Paso a paso prácticos para despliegues, CI/CD con GitHub Actions y flujos de trabajo.</p>
+          <span class="topic-link">Ver artículos →</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Recent Posts Section -->
+    <section class="container latest-posts-section">
+      <div class="section-title-wrap flex-between">
+        <div>
+          <span class="section-badge">Últimas Publicaciones</span>
+          <h2 class="section-heading">Artículos Recientes</h2>
+        </div>
+        <a href="/es/" class="btn btn-secondary">
+          <span>Ver todos ({recentPosts.length})</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+      </div>
+
+      <div class="posts-grid">
+        {featuredPosts.map((post) => (
+          <PostCard post={post} lang="es" />
+        ))}
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .landing-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 5rem;
+  }
+
+  /* Hero */
+  .hero-section {
+    text-align: center;
+    max-width: 860px;
+    margin: 0 auto;
+    padding-top: 2rem;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 1rem;
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: var(--radius-full);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #a5b4fc;
+    margin-bottom: 1.75rem;
+  }
+
+  .status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 10px #10b981;
+  }
+
+  .hero-main-title {
+    font-size: clamp(2.4rem, 5.5vw, 4rem);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.03em;
+  }
+
+  .hero-lead-text {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    max-width: 720px;
+    margin: 0 auto 2.5rem auto;
+  }
+
+  .hero-cta-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+  }
+
+  .btn-lg {
+    padding: 0.85rem 1.75rem;
+    font-size: 1.05rem;
+  }
+
+  .tech-pills {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .tech-pill {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--bg-card-border);
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
+  }
+
+  /* Section Titles */
+  .section-title-wrap {
+    margin-bottom: 2.5rem;
+  }
+
+  .section-title-wrap.text-center {
+    text-align: center;
+  }
+
+  .section-title-wrap.flex-between {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .section-badge {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent-primary);
+    margin-bottom: 0.4rem;
+  }
+
+  .section-heading {
+    font-size: clamp(1.8rem, 3.5vw, 2.3rem);
+    color: var(--text-primary);
+  }
+
+  .section-subheading {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    margin-top: 0.5rem;
+  }
+
+  /* Topics Grid */
+  .topic-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.75rem;
+  }
+
+  .topic-card {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .topic-icon-wrap {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-md);
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .topic-title {
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .topic-desc {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+  }
+
+  .topic-link {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--accent-primary);
+    transition: var(--transition);
+  }
+
+  .topic-card:hover .topic-link {
+    color: #a5b4fc;
+    transform: translateX(4px);
+    display: inline-block;
+  }
+
+  /* Posts Grid */
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.75rem;
+  }
+
+  @media (max-width: 640px) {
+    .hero-cta-group {
+      flex-direction: column;
+      width: 100%;
+    }
+    .hero-cta-group .btn {
+      width: 100%;
+    }
+    .posts-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

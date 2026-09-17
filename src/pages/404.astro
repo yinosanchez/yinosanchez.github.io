@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE_CONFIG } from '../config';
+---
+
+<BaseLayout
+  title={`404 - Página no encontrada | ${SITE_CONFIG.author}`}
+  description="La página que buscas no existe o ha sido movida."
+  lang="es"
+>
+  <div class="content-container not-found-container">
+    <div class="not-found-card glass-card">
+      <div class="code-badge">404</div>
+      <h1 class="not-found-title">Página no encontrada</h1>
+      <p class="not-found-desc">
+        La ruta a la que intentas acceder no existe, ha cambiado de dirección o aún no ha sido publicada.
+      </p>
+
+      <div class="not-found-actions">
+        <a href="/" class="btn btn-primary">
+          <span>Ir a la Página Principal</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+        <a href="/es/" class="btn btn-secondary">
+          <span>Ver Artículos del Blog</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .not-found-container {
+    padding: 3rem 0 5rem 0;
+  }
+
+  .not-found-card {
+    text-align: center;
+    padding: 4rem 2rem;
+    border-color: rgba(99, 102, 241, 0.3);
+  }
+
+  .code-badge {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: clamp(4rem, 10vw, 6.5rem);
+    font-weight: 800;
+    line-height: 1;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+  }
+
+  .not-found-title {
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    margin-bottom: 1rem;
+  }
+
+  .not-found-desc {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    max-width: 480px;
+    margin: 0 auto 2.5rem auto;
+    line-height: 1.6;
+  }
+
+  .not-found-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+</style>
