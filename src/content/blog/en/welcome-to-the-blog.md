@@ -2,35 +2,19 @@
 title: "Welcome to my Blog on Software Development and Tech"
 description: "An introduction to this personal space where I will share reflections, tutorials, and insights about software engineering."
 date: 2026-09-16
-category: "development"
+category: "column"
 lang: "en"
 translation_id: "bienvenido"
-author_comment: "I decided to build this blog with Astro and GitHub Pages aiming for maximum page speed and total customization freedom. I hope you find useful insights here!"
-tags: ["astro", "welcome", "web"]
+author_comment: "An entry page of sorts. I hope to have time to update it regularly. I had trouble keeping a blog updated, and now I've assigned myself two, plus a section of experiments."
+tags: ["welcome"]
 ---
 
-Hello everyone! Welcome to my official personal tech blog.
+Hello everyone! Welcome to my official personal space.
 
-In this space you will find articles focused on:
+Here you will find:
 
-- **Modern Software Engineering**: Clean architecture, best practices, and emerging tools.
-- **Artificial Intelligence & Productivity**: Autonomous agents, LLMs, and development workflows.
-- **Hands-on Tutorials**: Practical solutions to everyday engineering challenges.
-
-## Why Astro for this blog?
-
-Astro provides an Islands Architecture that empowers us to:
-
-1. Ship zero JavaScript by default with fully static HTML.
-2. Hydrate interactive components only where required (like the author's note modal or language selector).
-3. Achieve top-tier Core Web Vitals scores.
-
-```typescript
-// Quick example of TypeScript support in Astro
-const author: string = "Yino Sánchez";
-console.log(`Welcome to ${author}'s blog`);
-```
-
-> "Simplicity is prerequisite for reliability." — Edsger W. Dijkstra
+- **Five Pointed Square**: My space for writing short fiction stories. I hope to include new things in my attempt to resume this habit.
+- **A Floating Column**: An opinion column that may or may not be relevant.
+- **Experiments**: Where I plan to share experiments more typical of programming.
 
 Feel free to check out the author's note at the top of the post and leave your feedback in the comments section below!

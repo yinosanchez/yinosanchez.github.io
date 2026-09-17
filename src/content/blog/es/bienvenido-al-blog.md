@@ -1,36 +1,20 @@
 ---
-title: "Bienvenido a mi Blog sobre Desarrollo y Tecnología"
-description: "Una introducción a este espacio donde compartiré reflexiones, tutoriales y aprendizajes sobre ingeniería de software."
+title: "Bienvenido a mi Blog"
+description: "Una introducción a este espacio donde compartiré historias, reflexiones y experimentos."
 date: 2026-09-16
-category: "desarrollo"
+category: "columna"
 lang: "es"
 translation_id: "bienvenido"
-author_comment: "Decidí crear este blog en Astro y GitHub Pages buscando la máxima velocidad de carga y total libertad en la personalización. ¡Espero que encuentres contenido útil aquí!"
-tags: ["astro", "bienvenida", "web"]
+author_comment: "Una pagina de entrada cualquiera. Espero tener tiempo para actualizarla con regularidad. Me costaba actualizar un blog, y ahora me acabo de asignar dos, más una sección de experimentos."
+tags: ["bienvenida"]
 ---
 
-¡Hola a todos! Te doy la bienvenida oficial a mi nuevo blog personal.
+¡Hola a todos! Te doy la bienvenida oficial a mi nuevo espacio personal.
 
-En este espacio encontrarás publicaciones dedicadas a:
+En este espacio encontrarás:
 
-- **Desarrollo de Software Moderno**: Arquitectura limpia, buenas prácticas y frameworks emergentes.
-- **Inteligencia Artificial y Productividad**: Agentes autónomos, LLMs y optimización de flujos de trabajo.
-- **Tutoriales y Casos Prácticos**: Soluciones reales a problemas comunes de ingeniería.
-
-## ¿Por qué Astro para este blog?
-
-Astro ofrece una arquitectura orientada a islas (*Islands Architecture*) que permite:
-
-1. Generar HTML completamente estático por defecto.
-2. Cargar JavaScript interactivo únicamente donde se necesita (por ejemplo, en el modal de comentarios del autor o el switch de idiomas).
-3. Obtener puntuaciones perfectas en Core Web Vitals (LCP, FID, CLS).
-
-```javascript
-// Un ejemplo rápido de cómo se estructura un componente en Astro
-const author = "Yino Sánchez";
-console.log(`Bienvenido al blog de ${author}`);
-```
-
-> "La simplicidad es el requisito previo para la fiabilidad." — Edsger W. Dijkstra
+- **El Cuadrado de Cinco Puntas**: Mi espacio para escribir historias breves de ficción. Espero poder incluir cosas nuevas en mi intento por retomar este habito.
+- **Una Columna Flotante**: Una columna de opinión que puede o no ser relevante..
+- **Experimentos**: Lugar donde planeo compartir experimentos más propios de la programación.
 
 ¡No olvides revisar la nota especial del autor en el botón superior y dejar tus comentarios al final de la página!
