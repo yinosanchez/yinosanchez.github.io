@@ -15,6 +15,46 @@ if (!comment) return null;
 
 // ID único para no colisionar
 const modalId = `author-comment-modal-${Math.random().toString(36).substring(2, 9)}`;
+
+// Función para transformar el texto (soporta Markdown simple, HTML, saltos de línea y viñetas)
+function formatComment(rawText: string): string {
+  if (!rawText) return '';
+
+  // Normalizar los <br /> o <br> a saltos de línea para parsear uniformemente si vienen mezclados
+  let text = rawText.replace(/<br\s*\/?>/gi, '\n');
+  const lines = text.split(/\r?\n/);
+  const output: string[] = [];
+  let inList = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+
+    if (line.startsWith('- ') || line.startsWith('* ')) {
+      if (!inList) {
+        output.push('<ul class="author-comment-list">');
+        inList = true;
+      }
+      const itemContent = line.substring(2);
+      output.push(`<li>${itemContent}</li>`);
+    } else {
+      if (inList) {
+        output.push('</ul>');
+        inList = false;
+      }
+      if (line.length > 0) {
+        output.push(`<p>${line}</p>`);
+      }
+    }
+  }
+
+  if (inList) {
+    output.push('</ul>');
+  }
+
+  return output.join('');
+}
+
+const renderedComment = formatComment(comment);
 ---
 
 <div class="author-comment-wrapper">
@@ -59,7 +99,7 @@ const modalId = `author-comment-modal-${Math.random().toString(36).substring(2, 
             <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
           </svg>
         </div>
-        <p class="author-comment-text">{comment}</p>
+        <div class="author-comment-text" set:html={renderedComment} />
       </div>
 
       <div class="modal-footer">
@@ -72,7 +112,6 @@ const modalId = `author-comment-modal-${Math.random().toString(36).substring(2, 
 </div>
 
 <script>
-  // Script para manejar apertura y cierre del modal
   function setupAuthorModals() {
     const triggerButtons = document.querySelectorAll<HTMLButtonElement>('[data-modal-target]');
     
@@ -107,7 +146,6 @@ const modalId = `author-comment-modal-${Math.random().toString(36).substring(2, 
     });
   }
 
-  // Inicializar al cargar y tras transiciones
   setupAuthorModals();
   document.addEventListener('astro:page-load', setupAuthorModals);
 </script>
@@ -136,19 +174,19 @@ const modalId = `author-comment-modal-${Math.random().toString(36).substring(2, 
     width: 36px;
     height: 36px;
     border-radius: var(--radius-full);
-    background: linear-gradient(135deg, #f59e0b 0%, #ec4899 100%);
+    background: linear-gradient(135deg, #FBBF24 0%, #34D399 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 0.85rem;
-    color: white;
+    color: #0F172A;
   }
 
   .modal-title {
     font-size: 1.1rem;
     margin: 0;
-    color: #fbbf24;
+    color: #FCD34D;
   }
 
   .modal-subtitle {
@@ -177,18 +215,39 @@ const modalId = `author-comment-modal-${Math.random().toString(36).substring(2, 
   .modal-body {
     position: relative;
     padding: 0.5rem 0 1.5rem 0;
+    max-height: 65vh;
+    overflow-y: auto;
   }
 
   .quote-icon {
-    color: rgba(245, 158, 11, 0.2);
-    margin-bottom: 0.5rem;
+    color: rgba(251, 191, 36, 0.25);
+    margin-bottom: 0.75rem;
   }
 
   .author-comment-text {
-    font-size: 1.05rem;
+    font-size: 1rem;
     line-height: 1.7;
-    color: #f1f5f9;
-    font-style: italic;
+    color: #F1F5F9;
+  }
+
+  :global(.author-comment-text p) {
+    margin-bottom: 0.85rem;
+  }
+
+  :global(.author-comment-text p:last-child) {
+    margin-bottom: 0;
+  }
+
+  :global(.author-comment-text ul.author-comment-list) {
+    margin: 0.75rem 0 1rem 1.5rem;
+    padding-left: 0.5rem;
+    list-style-type: disc;
+  }
+
+  :global(.author-comment-text ul.author-comment-list li) {
+    margin-bottom: 0.35rem;
+    color: #E2E8F0;
+    line-height: 1.6;
   }
 
   .modal-footer {

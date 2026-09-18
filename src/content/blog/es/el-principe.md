@@ -5,7 +5,18 @@ date: 2016-04-03
 category: "historia"
 lang: "es"
 translation_id: "el-principe"
-author_comment: "Esta fue la última historia que hice en el blog original. Era una historia basada en el mito Arturiano. La trama principal está puesta de manera sugerida de una manera que hoy día diez años después me cuesta encontrarla. Recuerdo que era una analogia de un apocalipsis cibernetico, donde las armaduras mágicas reemplazaban a los caballeros y luego con la ayuda de Morgana derrocaban a la monarquia. <br /> En esta historia cada nombre es un anagrama que indica a que personaje de la mitología arturiana se está haciendo referencia. He aqui la lista: <br />- Palcervi = Percival<br />- Grane Ibe = Ginebra<br />- Gran Pendo Torrúa = Arturo Pendragon<br />- Gran Mélimo = Mago Merlín<br />- Garra Tinbian = Gran Bretaña (Britain)<br />- Carfina = Francia<br />- Gran Oma = Morgana<br />- Desafortunadamante no recuerdo a que hacia refencia Quila y Maveo, aunque recuerdo que el anagrama lo hacían juntos."
+author_comment: |
+  Esta fue la última historia que hice en el blog original. Era una historia basada en el mito Arturiano. La trama principal está puesta de manera sugerida de una manera que hoy día diez años después me cuesta encontrarla. Recuerdo que era una analogía de un apocalipsis cibernético, donde las armaduras mágicas reemplazaban a los caballeros y luego con la ayuda de Morgana derrocaban a la monarquía.
+
+  En esta historia cada nombre es un anagrama que indica a qué personaje de la mitología arturiana se está haciendo referencia. He aquí la lista:
+  - Palcervi = Percival
+  - Gran Ibe = Ginebra
+  - Gran Pendo Torrúa = Arturo Pendragon
+  - Gran Mélimo = Mago Merlín
+  - Garra Tinbian = Gran Bretaña (Britain)
+  - Carfina = Francia
+  - Gran Oma = Morgana
+  - Desafortunadamente no recuerdo a qué hacía referencia Quila y Maveo, aunque recuerdo que el anagrama lo hacían juntos.
 tags: ["cuadrado-de-cinco-puntas", "ficcion", "arturiano", "medieval"]
 ---
 
